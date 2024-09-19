@@ -1,24 +1,20 @@
-# Usar la imagen base del SDK de .NET
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+# Usa la imagen base
+FROM cesarbm/microsoft_net_8
 
-# Establecer el directorio de trabajo dentro del contenedor
+# Establece el directorio de trabajo en /app
 WORKDIR /app
 
-# Crear una nueva aplicación Blazor
-RUN dotnet new blazor -o BlazorApp
+# Instala la plantilla de Blazor
+RUN dotnet new blazor -o BlazingPizza
 
-# Copiar los archivos locales necesarios al contenedor
-COPY ./Home.razor ./BlazorApp/Components/Pages/Home.razor
-COPY ./NavMenu.razor ./BlazorApp/Components/Layout/NavMenu.razor
-COPY ./Pizzas.razor ./BlazorApp/Components/Pages/Pizzas.razor
-COPY ./PizzaSpecial.cs ./BlazorApp/Data/PizzaSpecial.cs
-COPY ./Pizza.cs ./BlazorApp/Data/Pizza.cs
+# Establece el directorio de trabajo en /app/BlazingPizza
+WORKDIR /app/BlazingPizza
 
-# Exponer el puerto en el que correrá la aplicación
-EXPOSE 5000
+# Copia todos los archivos al contenedor
+COPY . .
 
-# Cambiar al directorio de la aplicación Blazor
-WORKDIR /app/BlazorApp
+# Expone el puerto 80 para que la app sea accesible desde fuera del contenedor
+EXPOSE 80
 
-# Ejecutar la aplicación usando dotnet run
-CMD ["dotnet", "run", "--urls", "http://0.0.0.0:5000"]
+# Comando para iniciar la aplicación cuando el contenedor se ejecute
+CMD ["dotnet", "run", "--urls", "http://0.0.0.0:80"]
