@@ -2,13 +2,16 @@
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 
 # Establece el directorio de trabajo
-WORKDIR /src
+WORKDIR /app
 
 # Clona el repositorio
 RUN git clone https://github.com/MicrosoftDocs/mslearn-interact-with-data-blazor-web-apps.git BlazingPizza
 
-# Copia el archivo de solución y restaura las dependencias
-WORKDIR /src/BlazingPizza
+# Copia el archivo de índice que deseas reemplazar
+COPY ./Index.razor /app/BlazingPizza/Pages/
+
+# Cambia al directorio de la solución y restaura las dependencias
+WORKDIR /app/BlazingPizza
 RUN dotnet restore "BlazingPizza.csproj"
 
 # Construye la aplicación
@@ -27,3 +30,5 @@ EXPOSE 80
 
 # Comando para iniciar la aplicación
 CMD ["dotnet", "BlazingPizza.dll"]
+
+
