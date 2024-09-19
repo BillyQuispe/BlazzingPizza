@@ -1,20 +1,29 @@
-# Usa la imagen base
-FROM cesarbm/microsoft_net_8
+# Usa la imagen base de .NET SDK
+FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 
-# Establece el directorio de trabajo en /app
+# Establece el directorio de trabajo
+WORKDIR /src
+
+# Clona el repositorio
+RUN git clone https://github.com/MicrosoftDocs/mslearn-interact-with-data-blazor-web-apps.git BlazingPizza
+
+# Copia el archivo de solución y restaura las dependencias
+WORKDIR /src/BlazingPizza
+RUN dotnet restore "BlazingPizza.csproj"
+
+# Construye la aplicación
+RUN dotnet build "BlazingPizza.csproj" -c Release -o /app/build
+
+# Publica la aplicación
+RUN dotnet publish "BlazingPizza.csproj" -c Release -o /app/publish
+
+# Usa la imagen base de .NET Runtime para ejecutar la aplicación
+FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS runtime
 WORKDIR /app
+COPY --from=build /app/publish .
 
-# Instala la plantilla de Blazor
-RUN dotnet new blazor -o BlazingPizza
-
-# Establece el directorio de trabajo en /app/BlazingPizza
-WORKDIR /app/BlazingPizza
-
-# Copia todos los archivos al contenedor
-COPY . .
-
-# Expone el puerto 80 para que la app sea accesible desde fuera del contenedor
+# Expone el puerto 80 para que la app sea accesible
 EXPOSE 80
 
-# Comando para iniciar la aplicación cuando el contenedor se ejecute
-CMD ["dotnet", "run", "--urls", "http://0.0.0.0:80"]
+# Comando para iniciar la aplicación
+CMD ["dotnet", "BlazingPizza.dll"]
