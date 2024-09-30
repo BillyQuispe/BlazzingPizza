@@ -8,7 +8,10 @@ WORKDIR /app
 RUN git clone https://github.com/MicrosoftDocs/mslearn-blazor-navigation.git BlazingPizza 
 
 # Copia el archivo de índice que deseas reemplazar
-COPY ./Index.razor /app/BlazingPizza/Pages/
+COPY ./Index.razor /app/BlazingPizza
+
+# Copia el archivo de índice que deseas reemplazar
+COPY ./Checkout.razor /app/BlazingPizza/Pages/
 
 # Cambia al directorio de la solución y restaura las dependencias
 WORKDIR /app/BlazingPizza
