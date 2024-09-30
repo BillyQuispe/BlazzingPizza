@@ -5,7 +5,7 @@ FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /app
 
 # Clona el repositorio
-RUN git clone https://github.com/MicrosoftDocs/mslearn-interact-with-data-blazor-web-apps.git BlazingPizza
+RUN git clone https://github.com/MicrosoftDocs/mslearn-blazor-navigation.git BlazingPizza 
 
 # Copia el archivo de índice que deseas reemplazar
 COPY ./Index.razor /app/BlazingPizza/Pages/
