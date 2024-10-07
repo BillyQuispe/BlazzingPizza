@@ -1,47 +1,50 @@
-
-
-# Usa la imagen base de .NET SDK para la fase de compilación
+# Etapa 1: Compilación - Utilizando la imagen SDK de .NET para construir el proyecto
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 
+# Variables para los directorios y archivos del proyecto
+ARG WORKDIR="/app"
+ARG BLAZING_PIZZA_DIR="${WORKDIR}/BlazingPizza"
+ARG BLAZOR_PROJECT="BlazingPizza"
+
 # Establece el directorio de trabajo
-WORKDIR /home
+WORKDIR $WORKDIR
 
-# Clona el repositorio de BlazingPizza
-RUN git clone https://github.com/MicrosoftDocs/mslearn-blazor-navigation.git BlazingPizza
+# Copia el proyecto BlazingPizza al contenedor
+COPY ./BlazingPizza/ $BLAZING_PIZZA_DIR/
 
-# Cambia al directorio del proyecto BlazingPizza
-WORKDIR /home/BlazingPizza
+# Copia los archivos modificados necesarios
+COPY ./Checkout.razor $BLAZING_PIZZA_DIR/Pages/Checkout.razor
+COPY ./Index.razor $BLAZING_PIZZA_DIR/Pages/Index.razor
+COPY ./OrderController.cs $BLAZING_PIZZA_DIR/OrderController.cs
+COPY ./OrderState.cs $BLAZING_PIZZA_DIR/OrderState.cs
+COPY ./PizzaStoreContext.cs $BLAZING_PIZZA_DIR/PizzaStoreContext.cs
+COPY ./MyOrders.razor $BLAZING_PIZZA_DIR/Pages/MyOrders.razor
+COPY ./OrderDetail.razor $BLAZING_PIZZA_DIR/Pages/OrderDetail.razor
+COPY ./MainLayout.razor $BLAZING_PIZZA_DIR/Shared/MainLayout.razor
+COPY ./App.razor $BLAZING_PIZZA_DIR/App.razor
+COPY ./_Host.cshtml $BLAZING_PIZZA_DIR/Pages/_Host.cshtml
 
-# Copia los archivos de reemplazo 
-COPY ./Checkout.razor ./home/BlazingPizza/Pages/Checkout.razor
-COPY ./Index.razor ./home/BlazingPizza/Pages/Index.razor
-COPY ./OrderController.cs ./home/BlazingPizza/OrderController.cs
-COPY ./OrderState.cs ./home/BlazingPizza/OrderState.cs
-COPY ./PizzaStoreContext.cs ./home/BlazingPizza/PizzaStoreContext.cs
-COPY ./MyOrders.razor ./home/BlazingPizza/Pages/MyOrders.razor
-COPY ./OrderDetail.razor ./home/BlazingPizza/Pages/OrderDetail.razor
-COPY ./MainLayout.razor ./home/BlazingPizza/Shared/MainLayout.razor
-COPY ./App.razor ./home/BlazingPizza/App.razor
-COPY ./_Host.cshtml ./home/BlazingPizza/Pages/_Host.cshtml
+# Restaura las dependencias y paquetes NuGet del proyecto
+RUN dotnet restore $BLAZING_PIZZA_DIR/BlazingPizza.csproj
 
-# Restaura las dependencias del proyecto
-RUN dotnet restore
+# Compila la aplicación en modo Release y empaqueta en la carpeta /app/publish
+RUN dotnet publish $BLAZING_PIZZA_DIR/BlazingPizza.csproj -c Release -o /app/publish
 
-# Compila y publica la aplicación
-RUN dotnet publish -c Release -o /app
+# Etapa 2: Imagen de ejecución - Utiliza la imagen base de .NET Runtime
+FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS runtime
 
-# Usa la imagen base de .NET Runtime para ejecutar la aplicación
-FROM mcr.microsoft.com/dotnet/aspnet:6.0
+# Variables para el directorio de trabajo
+ARG WORKDIR="/app"
+ARG PUBLISH_DIR="/app/publish"
 
 # Establece el directorio de trabajo en la nueva imagen
-WORKDIR /app
+WORKDIR $WORKDIR
 
-# Copia la aplicación compilada desde la fase de build
-COPY --from=build /app .
+# Copia los archivos compilados desde la etapa de construcción
+COPY --from=build $PUBLISH_DIR .
 
-# Expone los puertos 80 y 443
-EXPOSE 80
-EXPOSE 443
+# Exponer el puerto en el que correrá la aplicación
+EXPOSE 5000
 
-# Define el punto de entrada para ejecutar la aplicación
+# Ejecutar la aplicación compilada
 ENTRYPOINT ["dotnet", "BlazingPizza.dll"]
