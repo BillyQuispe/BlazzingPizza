@@ -10,9 +10,9 @@ WORKDIR /home
 RUN git clone https://github.com/MicrosoftDocs/mslearn-blazor-navigation.git BlazingPizza
 
 # Cambia al directorio del proyecto BlazingPizza
-WORKDIR /src/BlazingPizza
+WORKDIR /home/BlazingPizza
 
-# Copia los archivos de reemplazo (Index.razor y Checkout.razor)
+# Copia los archivos de reemplazo 
 COPY ./BlazingPizza/ ./home/BlazingPizza/
 COPY ./Checkout.razor ./home/BlazingPizza/Pages/Checkout.razor
 COPY ./Index.razor ./home/BlazingPizza/Pages/Index.razor
