@@ -1,9 +1,10 @@
 
+
 # Usa la imagen base de .NET SDK para la fase de compilación
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 
 # Establece el directorio de trabajo
-WORKDIR /src
+WORKDIR /home
 
 # Clona el repositorio de BlazingPizza
 RUN git clone https://github.com/MicrosoftDocs/mslearn-blazor-navigation.git BlazingPizza
@@ -23,7 +24,6 @@ COPY ./OrderDetail.razor ./home/BlazingPizza/Pages/OrderDetail.razor
 COPY ./MainLayout.razor ./home/BlazingPizza/Shared/MainLayout.razor
 COPY ./App.razor ./home/BlazingPizza/App.razor
 COPY ./_Host.cshtml ./home/BlazingPizza/Pages/_Host.cshtml
-
 
 # Restaura las dependencias del proyecto
 RUN dotnet restore
