@@ -13,7 +13,6 @@ RUN git clone https://github.com/MicrosoftDocs/mslearn-blazor-navigation.git Bla
 WORKDIR /home/BlazingPizza
 
 # Copia los archivos de reemplazo 
-COPY ./BlazingPizza/ ./home/BlazingPizza/
 COPY ./Checkout.razor ./home/BlazingPizza/Pages/Checkout.razor
 COPY ./Index.razor ./home/BlazingPizza/Pages/Index.razor
 COPY ./OrderController.cs ./home/BlazingPizza/OrderController.cs
